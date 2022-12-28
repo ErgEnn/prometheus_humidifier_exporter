@@ -1,4 +1,4 @@
-from miio import airhumidifier
+from miio.integrations.humidifier.zhimi import airhumidifier
 from prometheus_client import Gauge
 import prometheus_client
 import logging
@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--port', help='prometheus port', required=True)
     args = parser.parse_args()
 
-    humidifier = airhumidifier.AirHumidifierCA1(args.ip, args.token)
+    humidifier = airhumidifier.AirHumidifier(args.ip, args.token)
 
     temperature = Gauge('humidifier_temp', 'temp, C')
     humidity = Gauge('humidifier_humidity', 'humidity')
@@ -36,7 +36,7 @@ def main():
         except:
             log.error("Can't get information from device")
             continue
-        water_level.set(status.depth)
+        water_level.set(status.water_level)
         temperature.set(status.temperature)
         humidity.set(status.humidity)
         if status.is_on:
